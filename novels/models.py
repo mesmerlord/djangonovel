@@ -7,12 +7,16 @@ class Author(models.Model):
     name = models.CharField(max_length = 30)
     index = models.AutoField(primary_key = True)
     slug = models.SlugField(max_length = 20)
+    def __str__(self):
+        return self.name
 
 class Category(models.Model):
     #Also used for language instead of creating a new model
     name = models.CharField(max_length = 30)
     index = models.AutoField(primary_key = True)
     slug = models.CharField(max_length = 20)
+    def __str__(self):
+        return self.name
 
 class Novel(models.Model):
     index = models.AutoField(primary_key = True)
@@ -25,7 +29,8 @@ class Novel(models.Model):
     slug = models.SlugField(blank = True)
     numOfChaps = models.IntegerField(default = 0)
     novelStatus = models.BooleanField(default = True) #True will be for Ongoing, False for Completed
-
+    def __str__(self):
+        return self.name
 
 
 
