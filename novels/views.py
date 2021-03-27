@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .models import Novel, Author, Category
-from .serializers import NovelSerializer, CategorySerializer,AuthorSerializer
+from .models import Novel, Author, Category, Chapter
+from .serializers import NovelSerializer, CategorySerializer,AuthorSerializer,ChapterSerializer
 from rest_framework import viewsets
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 
@@ -24,3 +24,8 @@ class AuthorSerializerView(viewsets.ModelViewSet):
     permission_classes = [ReadOnly]
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
+
+class ChapterSerializerView(viewsets.ModelViewSet):
+    permission_classes = [ReadOnly]
+    queryset = Chapter.objects.all()
+    serializer_class = ChapterSerializer

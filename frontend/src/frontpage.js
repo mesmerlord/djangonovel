@@ -1,5 +1,7 @@
 import React from 'react';
 import axios from 'axios';
+import { Button } from '@material-ui/core';
+
 
 export default class NovelList extends React.Component {
     state = {
@@ -27,10 +29,12 @@ export default class NovelList extends React.Component {
            return <li>{category.name}</li>
         })
         return (
-            
-            <ul>
-                {categories}
-            </ul>
+            <>
+                <Button variant="contained" color = "primary">Hello</Button>
+                <ul>
+                    {categories}
+                </ul>
+            </>
             )
       }
 }

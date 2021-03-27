@@ -32,6 +32,26 @@ class Novel(models.Model):
     def __str__(self):
         return self.name
 
+class Chapter(models.Model):
+    index = models.IntegerField(default = None, blank = True)
+    text = models.TextField(max_length=None)
+    title = models.TextField(max_length = 20)
+    novelParent = models.ForeignKey(Novel, on_delete = models.CASCADE)
+    nextChap = models.BooleanField(default = False)
+    def save(self, *args, **kwargs):
+        if not self.index:
+            self.index = Chapter.objects.filter(novelParent = self.novelParent).count()+1
+            try:
+                lastChap = Chapter.objects.get(novelParent = self.novelParent, index = self.index-1)
+                if lastChap:
+                    lastChap.nextChap = True
+                    lastChap.save()
+            except:
+                pass
+            
+        super(Chapter, self).save(*args, **kwargs)
+    def __str__(self):
+        return f"Chapter {self.index} - {self.novelParent}"
 
 
 
