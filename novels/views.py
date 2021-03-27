@@ -1,8 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import Novel, Author, Category, Chapter
 from .serializers import NovelSerializer, CategorySerializer,AuthorSerializer,ChapterSerializer
 from rest_framework import viewsets
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
+from rest_framework.response import Response
+from .tasks import addCat, addNovel, addChaps
+from django.http import HttpResponse
+
 
 class ReadOnly(BasePermission):
     def has_permission(self, request, view):
@@ -25,7 +29,28 @@ class AuthorSerializerView(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
 
-class ChapterSerializerView(viewsets.ModelViewSet):
+class ChapterSerializerView(viewsets.ViewSet):
     permission_classes = [ReadOnly]
     queryset = Chapter.objects.all()
-    serializer_class = ChapterSerializer
+    def list(self, request):
+        queryset = Chapter.objects.all()
+        serializer = ChapterSerializer(queryset, many=True)
+        return Response(serializer.data)
+    # serializer_class = ChapterSerializer
+    def retrieve(self, request, pk=None):
+        queryset = Chapter.objects.all()
+        chapter = get_object_or_404(queryset, novSlugChapSlug=pk)
+        serializer = ChapterSerializer(chapter)
+        return Response(serializer.data)
+def catUpload(request):
+    addCat.delay()
+    return HttpResponse("<li>Done</li>")
+
+def novelUpload(request):
+    addNovel.delay()
+    return HttpResponse("<li>Done</li>")
+
+def chapUpload(request):
+    
+    addChaps.delay()
+    return HttpResponse("<li>Done</li>")

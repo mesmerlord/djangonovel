@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
+    'django_celery_results',
     'corsheaders',
     'rest_framework',
     'novels',
@@ -62,6 +64,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'pirate.urls'
+
+CELERY_BROKER_URL = 'amqp://'
 
 TEMPLATES = [
     {
@@ -99,7 +103,7 @@ if DEBUG:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': env('NAME'),
             'USER': env('USER'),
             'PASSWORD': env('PASSWORD'),
@@ -108,7 +112,8 @@ else:
         }
     }
 REST_FRAMEWORK = {
-    
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20
 }
 
 
@@ -149,3 +154,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+# ..\env\scripts\activate
+# celery -A pirate worker -l info
+# celery -A pirate worker -B -l INFO
+# celery -A pirate worker --loglevel=INFO --without-gossip --without-mingle --without-heartbeat -Ofair
+# celery -A pirate purge
+# celery -A pirate status
+# celery -A pirate worker --loglevel=INFO
+# python manage.py celery worker -P gevent
+# celery -A pirate worker --pool=solo -l info
+# celery -A pirate beat

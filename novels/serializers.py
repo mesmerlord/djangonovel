@@ -5,17 +5,18 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
     catSlug = serializers.SlugField(source='slug')
     class Meta:
         model = Category
-        fields = ('index','name', 'catSlug')
+        fields = ('id','name', 'catSlug')
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Author
-        fields = ('index','name', 'slug')
+        fields = ('name', 'slug')
 class ChapterNovelSerializer(serializers.ModelSerializer):
+    novelName = serializers.CharField(source = "name")
     class Meta:
         model = Novel
-        fields = ('index', 'name', 'slug')
+        fields = ('novelName', 'slug')
 
 class NovelSerializer(serializers.HyperlinkedModelSerializer):
     
@@ -24,11 +25,12 @@ class NovelSerializer(serializers.HyperlinkedModelSerializer):
     author = AuthorSerializer()
     class Meta:
         model = Novel
-        fields = ('url','index','name', 'image','link','description','slug','numOfChaps','novelStatus',
+        fields = ('url','name', 'image','link','description','slug','numOfChaps','novelStatus',
         'author', 'category')
-class ChapterSerializer(serializers.HyperlinkedModelSerializer):
-
-    novelPar = ChapterNovelSerializer()
+class ChapterSerializer(serializers.ModelSerializer):
+    novel = serializers.CharField(source = 'novelParent.name')
+    novSlug = serializers.CharField(source = 'novelParent.slug')
+    
     class Meta:
         model = Chapter
-        fields = ('url','novelPar','index','title','text','nextChap')
+        fields = ('index','title','text','nextChap','novel','novSlug','novSlugChapSlug')
