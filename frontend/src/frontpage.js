@@ -1,39 +1,67 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import { Button } from '@material-ui/core';
-
+import { Box, Container, Grid } from '@material-ui/core';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {Link, Switch,
+    BrowserRouter as Router, Route } from 'react-router-dom'
 
 export default class NovelList extends React.Component {
     state = {
-        novels1:[]
+        novels1:[],
+        currentPage:1
     }
     headers = {
         'Content-Type': 'application/json'
     }
-    axiFetch = () => {
-        axios.get(`http://127.0.0.1:8000/api/category/`, {headers: this.headers})
+    axiFetch = (pagenum) => {
+        axios.get(`http://127.0.0.1:8000/api/novels/?limit=10&offset=${pagenum*10}`, {headers: this.headers})
       .then(res => {
-        const novels = res.data;
-        this.setState({ novels1:novels });
-        console.log(res.data)
+        const novels = res.data.results;
+        novels.map((newEl) => 
+            this.setState({novels1:[...this.state.novels1,newEl] }));
+        this.setState({currentPage:this.state.currentPage + 1});
       }).catch(err => {console.log(err)})
     }
     componentDidMount() {
         console.log("mounted")
-        this.axiFetch();
-        
+        this.axiFetch(this.state.currentPage);
+        console.log(this.state.novels1)
     }
     
     render() {
-        const categories = this.state.novels1.map((category) => {
-           return <li>{category.name}</li>
-        })
+        
+        const buttonClick = () => {
+            this.axiFetch(this.state.currentPage);
+        }
+        const categories = (this.state.novels1? this.state.novels1.map((category) => category.author? (
+            <div key = { category.name} className="card mx-auto mb-4" style={{width: "13rem"}}>
+                
+                <img src = {category.image} className= "card-img-top" width = "120" height = "300"/>
+                
+                <div class="card-body" style={{marginRight:"20px"}}>
+                    <Link to = {{pathname:category.slug,state:{id:category}}}>
+                    <div>{category.name}</div></Link>
+                    <div>{category.author['name']}</div>
+                    
+                </div>
+                
+            </div>
+        ):console.log("Found")):"No news found")
         return (
             <>
-                <Button variant="contained" color = "primary">Hello</Button>
-                <ul>
-                    {categories}
-                </ul>
+            <div className= "row">
+                <div class="main-col col-md-8 col-sm-12">
+                    <div class="d-flex align-content-center flex-wrap">
+                        {categories}
+                    </div>
+                    <div class = "row d-flexrow justify-content-center">
+                <button class = "btn btn-primary"  onClick={buttonClick}>Load More</button>
+                </div>
+                </div>
+                
+            </div> 
+            
+                 
             </>
             )
       }

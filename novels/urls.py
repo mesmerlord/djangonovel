@@ -5,15 +5,18 @@ from django.contrib.auth.models import User
 from rest_framework import routers
 from .models import Novel
 from .views import (NovelSerializerView, CategorySerializerView, 
-                AuthorSerializerView, ChapterSerializerView, catUpload,
-                novelUpload,chapUpload )
+                AuthorSerializerView, ChaptersSerializerView, catUpload,
+                novelUpload,chapUpload,SingleChapterSerializerView )
 
 
 router = routers.DefaultRouter()
 router.register('api/novels', NovelSerializerView)
-router.register('api/category', CategorySerializerView)
+router.register('api/categories', CategorySerializerView)
 router.register('api/author', AuthorSerializerView)
-router.register('api/chapters', ChapterSerializerView)
+router.register('api/getchapter', SingleChapterSerializerView)
+router.register('api/chapters', ChaptersSerializerView)
+
+
 
 urlpatterns = [
     path('', include(router.urls)),
