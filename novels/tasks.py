@@ -2,10 +2,10 @@ from celery import shared_task
 from novels.models import Category, Author, Novel, Chapter
 import requests 
 from bs4 import BeautifulSoup
-import json
 import pandas as pd
 from django.utils.text import slugify
 import json
+from os import listdir
 
 @shared_task
 def addCat():
@@ -83,23 +83,26 @@ def addNovel():
 
 @shared_task
 def addChaps():
-    dfChapter = pd.read_csv(r'media\new7.csv', sep=',')
-    # novels = []
-    chaplist = dfChapter.values.tolist()
-    doneList = []
-    for x in chaplist:
-        if x[2] not in doneList:
-            try:
-                chapter = Chapter(
-                    text = x[1],
-                    title = x[3],
-                    novelParent = Novel.objects.get(slug = x[6])
+    for novelFile in listdir("media"):
+        if ".csv" in novelFile and "file" not in novelFile:
 
-                )
-                chapter.save()
-                doneList.append(x[2]) 
-            except:
-                continue
+            dfChapter = pd.read_csv(f'media/{novelFile}', sep=',')
+            # novels = []
+            chaplist = dfChapter.values.tolist()
+            doneList = []
+            for x in chaplist:
+                if x[2] not in doneList:
+                    try:
+                        chapter = Chapter(
+                            text = x[1],
+                            title = x[3],
+                            novelParent = Novel.objects.get(slug = x[6])
+
+                        )
+                        chapter.save()
+                        doneList.append(x[2]) 
+                    except:
+                        continue
 
 
 @shared_task

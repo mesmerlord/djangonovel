@@ -1,0 +1,15 @@
+body {
+  padding-top: 80px;
+}
+.container chapter-box {
+  line-height: 10em;
+}
+
+div.container chapter-box > p {
+  padding-top: 5em;
+}
+.chapButtonDivider {
+  width: 3px;
+  height: auto;
+  display: inline-block;
+}

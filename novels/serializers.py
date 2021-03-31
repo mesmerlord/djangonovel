@@ -3,16 +3,17 @@ from .models import Novel,Category,Author,Chapter
 from rest_framework.pagination import PageNumberPagination
 
 
-class CategorySerializer(serializers.HyperlinkedModelSerializer):
-    catSlug = serializers.SlugField(source='slug')
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('id','name', 'catSlug')
+        fields = "__all__"
+        # fields = ('name', 'catSlug')
 class ChapterSerializer(serializers.ModelSerializer):
+    novelParentName = serializers.CharField(source='novelParent.name')
     class Meta:
         model = Chapter
         lookup_field = "novSlugChapSlug"
-        fields = ('index','title',"text", "nextChap","novelParent")
+        fields = ('index','title',"text", "nextChap","novelParent","novelParentName")
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     
@@ -26,9 +27,10 @@ class ChaptersSerializer(serializers.ModelSerializer):
         model = Chapter
         fields = ('index','title',"novSlugChapSlug")
 
-class NovelSerializer(serializers.HyperlinkedModelSerializer):
+class NovelSerializer(serializers.ModelSerializer):
     author = AuthorSerializer()
-
+    category = CategorySerializer(many = True)
+    
     class Meta:
         model = Novel
         # fields = ('name', 'image','slug','author','description')
@@ -36,7 +38,6 @@ class NovelSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         
 class NovelInfoSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(many = True)
     class Meta:
         model = Novel
-        fields = ('name', 'image', 'link', 'description','slug', 'numOfChaps','novelStatus')
+        fields = ('name', 'image', 'description','slug')
