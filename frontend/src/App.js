@@ -8,6 +8,8 @@ import "bulma/css/bulma.min.css";
 import Header from "./header.js";
 import "./App.css";
 import ChapterView from "./chapter.js";
+import Footer from "./footer.js";
+import Categories from "./categories.js";
 
 function App() {
   return (
@@ -20,9 +22,11 @@ function App() {
           </Route>
           <Route path="/about" component={About} />
           <Route path="/chapter/:id" component={ChapterView} />
+          <Route path="/category/:category" component={Categories} />
           <Route path="/:id" component={NovelInfo} />
         </Switch>
       </Router>
+      <Footer />
     </div>
   );
 }

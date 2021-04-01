@@ -21,6 +21,11 @@ class AuthorSerializer(serializers.HyperlinkedModelSerializer):
         model = Author
         fields = ('name', 'slug')
 
+class SearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Novel
+        fields = ('name', 'slug')
+
 class ChaptersSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -30,14 +35,16 @@ class ChaptersSerializer(serializers.ModelSerializer):
 class NovelSerializer(serializers.ModelSerializer):
     author = AuthorSerializer()
     category = CategorySerializer(many = True)
-    
+
     class Meta:
         model = Novel
         # fields = ('name', 'image','slug','author','description')
         
         fields = '__all__'
-        
+    
+
 class NovelInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Novel
+        
         fields = ('name', 'image', 'description','slug')

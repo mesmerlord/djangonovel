@@ -6,12 +6,14 @@ import { Link } from "react-router-dom";
 export default class NovelList extends React.Component {
   state = {
     novels1: [],
-    currentPage: 1,
+    currentPage: 0,
+    loadButton: true,
   };
   headers = {
     "Content-Type": "application/json",
   };
   axiFetch = (pagenum) => {
+    this.setState({ loadButton: true });
     axios
       .get(
         `http://127.0.0.1:8000/api/novels/?limit=10&offset=${pagenum * 10}`,
@@ -23,7 +25,9 @@ export default class NovelList extends React.Component {
           this.setState({ novels1: [...this.state.novels1, newEl] })
         );
         this.setState({ currentPage: this.state.currentPage + 1 });
+        this.setState({ loadButton: false });
       })
+
       .catch((err) => {
         console.log(err);
       });
@@ -73,7 +77,14 @@ export default class NovelList extends React.Component {
               {categories}
             </div>
             <div className="row d-flexrow justify-content-center">
-              <button className="btn btn-primary" onClick={buttonClick}>
+              <button
+                className={
+                  this.state.loadButton
+                    ? "button is-link is-loading"
+                    : "button is-link"
+                }
+                onClick={buttonClick}
+              >
                 Load More
               </button>
             </div>

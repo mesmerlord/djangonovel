@@ -6,7 +6,7 @@ from rest_framework import routers
 from .models import Novel
 from .views import (NovelSerializerView, CategorySerializerView, 
                 AuthorSerializerView, ChaptersSerializerView, catUpload,
-                novelUpload,chapUpload,SingleChapterSerializerView )
+                novelUpload,chapUpload,SingleChapterSerializerView,SearchSerializerView )
 
 
 router = routers.DefaultRouter()
@@ -15,6 +15,7 @@ router.register('api/categories', CategorySerializerView)
 router.register('api/author', AuthorSerializerView)
 router.register('api/getchapter', SingleChapterSerializerView)
 router.register('api/chapters', ChaptersSerializerView)
+router.register('api/search', SearchSerializerView)
 
 
 

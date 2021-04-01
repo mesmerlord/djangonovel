@@ -1,15 +1,45 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import logo from "./final.png";
+import axios from "axios";
 
 export default class Header extends React.Component {
   state = {
     isActive: false,
+    results: [],
+    query: [],
+    pushedQuery: "",
   };
   changeBurger = () => {
     this.setState({ isActive: !this.state.isActive });
     console.log("changed");
   };
+  handleSearch = (e) => {
+    this.setState({ pushedQuery: e.target.value });
+    console.log(this.state.query);
+    this.search(this.state.query);
+  };
+  search = () => {
+    this.state.pushedQuery.length > 2
+      ? axios
+          .get(
+            `http://127.0.0.1:8000/api/search/?search=${this.state.pushedQuery}`
+          )
+          .then((response) => {
+            const rest = response.data.results;
+
+            this.setState({ results: rest });
+          })
+      : console.log("No res");
+  };
   render() {
+    const resultsBox = this.state.results
+      ? this.state.results.map((result) => (
+          <a href={`/${result.slug}`} class="navbar-item">
+            {result.name}
+          </a>
+        ))
+      : console.log("no chaps");
     return (
       <>
         <nav
@@ -20,11 +50,7 @@ export default class Header extends React.Component {
         >
           <div class="navbar-brand">
             <a class="navbar-item" href="/">
-              <img
-                src="https://bulma.io/images/bulma-logo.png"
-                width="112"
-                height="28"
-              />
+              <img src={logo} />
             </a>
 
             <a
@@ -74,15 +100,33 @@ export default class Header extends React.Component {
             <div class="navbar-end">
               <div class="navbar-item">
                 <div class="buttons">
-                  <a class="button is-primary">
-                    <strong>Sign up</strong>
-                  </a>
-                  <a class="button is-light">Log in</a>
+                  <div class="navbar-item has-dropdown is-hoverable">
+                    <div class="navbar-dropdown">
+                      {resultsBox}
+                      <a
+                        className={
+                          this.state.results.length > 2
+                            ? "navbar-item is-hidden"
+                            : "navbar-item"
+                        }
+                      >
+                        Type 4 Letters To Start Searching
+                      </a>
+                    </div>
+                    <input
+                      placeholder="Search"
+                      onChange={this.handleSearch}
+                      class="input is-rounded"
+                    />
+                  </div>
+
+                  {/* <a class="button is-light">Log in</a> */}
                 </div>
               </div>
             </div>
           </div>
         </nav>
+        <br />
       </>
     );
   }

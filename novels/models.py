@@ -25,6 +25,7 @@ class Category(models.Model):
 
 class Novel(models.Model):
     name = models.CharField(max_length = 100)
+    views = models.IntegerField(default = 0)
     image = models.URLField(blank = True)
     linkNU = models.URLField(blank = True)
     author = models.ForeignKey(Author, on_delete = models.CASCADE, null = True)
