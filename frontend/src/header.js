@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import logo from "./final.png";
 import axios from "axios";
+const apiHome = "http://127.0.0.1:8000/api";
 
 export default class Header extends React.Component {
   state = {
@@ -9,6 +10,7 @@ export default class Header extends React.Component {
     results: [],
     query: [],
     pushedQuery: "",
+    isSearching: false,
   };
   changeBurger = () => {
     this.setState({ isActive: !this.state.isActive });
@@ -16,18 +18,16 @@ export default class Header extends React.Component {
   };
   handleSearch = (e) => {
     this.setState({ pushedQuery: e.target.value });
-    console.log(this.state.query);
-    this.search(this.state.query);
+
+    this.search();
   };
   search = () => {
     this.state.pushedQuery.length > 2
       ? axios
-          .get(
-            `http://127.0.0.1:8000/api/search/?search=${this.state.pushedQuery}`
-          )
+          .get(`${apiHome}/search/?search=${this.state.pushedQuery}`)
           .then((response) => {
             const rest = response.data.results;
-
+            this.setState({ isSearching: false });
             this.setState({ results: rest });
           })
       : console.log("No res");
@@ -35,9 +35,9 @@ export default class Header extends React.Component {
   render() {
     const resultsBox = this.state.results
       ? this.state.results.map((result) => (
-          <a href={`/${result.slug}`} class="navbar-item">
+          <Link to={`/${result.slug}`} class="navbar-item">
             {result.name}
-          </a>
+          </Link>
         ))
       : console.log("no chaps");
     return (
@@ -49,11 +49,11 @@ export default class Header extends React.Component {
           style={{ outline: "1px" }}
         >
           <div class="navbar-brand">
-            <a class="navbar-item" href="/">
+            <Link class="navbar-item" to="/">
               <img src={logo} />
-            </a>
+            </Link>
 
-            <a
+            <Link
               role="button"
               class={
                 this.state.isActive
@@ -68,7 +68,7 @@ export default class Header extends React.Component {
               <span aria-hidden="true"></span>
               <span aria-hidden="true"></span>
               <span aria-hidden="true"></span>
-            </a>
+            </Link>
           </div>
 
           <div
@@ -78,21 +78,36 @@ export default class Header extends React.Component {
             }
           >
             <div class="navbar-start">
-              <a class="navbar-item" href="/">
+              <Link class="navbar-item" to="/">
                 Home
-              </a>
+              </Link>
 
-              <a class="navbar-item">Documentation</a>
+              <Link to="/category/1" class="navbar-item">
+                Action
+              </Link>
+              <Link to="/category/7" class="navbar-item">
+                Xuanhuan
+              </Link>
 
               <div class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link">More</a>
 
                 <div class="navbar-dropdown">
-                  <a class="navbar-item">About</a>
-                  <a class="navbar-item">Jobs</a>
-                  <a class="navbar-item">Contact</a>
-                  <hr class="navbar-divider" />
-                  <a class="navbar-item">Report an issue</a>
+                  <Link to="/category/1" class="navbar-item">
+                    Action
+                  </Link>
+                  <Link to="/category/2" class="navbar-item">
+                    Adventure
+                  </Link>
+                  <Link to="/category/4" class="navbar-item">
+                    Fantasy
+                  </Link>
+                  <Link to="/category/5" class="navbar-item">
+                    Harem
+                  </Link>
+                  <Link to="/category/12" class="navbar-item">
+                    Romance
+                  </Link>
                 </div>
               </div>
             </div>

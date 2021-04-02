@@ -2,7 +2,8 @@ import React from "react";
 // import "bootstrap/dist/css/bootstrap.min.css";
 import { Link, withRouter } from "react-router-dom";
 import axios from "axios";
-import DisqusComments from "./comments.js";
+// import DisqusComments from "./comments.js";
+const apiHome = "http://127.0.0.1:8000/api";
 
 class NovelInfo extends React.Component {
   state = {
@@ -12,13 +13,15 @@ class NovelInfo extends React.Component {
     author: String,
     chapterToShow: 10,
     loadButton: true,
+    title: "Loading",
+    descending: true,
   };
   redirectHome() {
     this.props.history.push("/");
   }
   headers = { "Content-Type": "application/json" };
   novelFetch = (slug) => {
-    const link = `http://127.0.0.1:8000/api/novels/${slug}/`;
+    const link = `${apiHome}/novels/${slug}/`;
     console.log(link);
     axios
       .get(link, { headers: this.headers })
@@ -31,7 +34,7 @@ class NovelInfo extends React.Component {
             : console.log("none");
         };
         author();
-        this.setState({ novelInfo: res });
+        this.setState({ novelInfo: res, title: res.name });
       })
       .catch((err) => {
         console.log(err);
@@ -39,9 +42,11 @@ class NovelInfo extends React.Component {
         this.setState({ novelInfo: [] });
       });
   };
+
   chapterFetch = (slug) => {
+    console.log(apiHome);
     axios
-      .get(`http://127.0.0.1:8000/api/chapters/${slug}/`, {
+      .get(`${apiHome}/chapters/${slug}/`, {
         headers: this.headers,
       })
       .then((response) => {
@@ -68,7 +73,14 @@ class NovelInfo extends React.Component {
     this.setState({ chapterToShow: this.state.chapterToShow + 10 });
     this.setState({ loadButton: false });
   };
+  changeOrdering = () => {
+    this.setState({
+      chapers: this.state.chapters.reverse(),
+      descending: !this.state.descending,
+    });
+  };
   render() {
+    document.title = this.state.title;
     const chapterBox = this.state.hasChaps ? (
       this.state.chapters.slice(0, this.state.chapterToShow).map((chapters) => (
         <Link to={`/chapter/${chapters.novSlugChapSlug}`}>
@@ -82,9 +94,9 @@ class NovelInfo extends React.Component {
     );
     const categories = this.state.novelInfo.category ? (
       this.state.novelInfo.category.map((item) => (
-        <a key={item.id} href={`/category/${item.id}`}>
+        <Link key={item.name} to={`/category/${item.id}`}>
           {item.name} &nbsp;
-        </a>
+        </Link>
       ))
     ) : (
       <a>{this.state.loadButton ? "Loading" : ""}</a>
@@ -93,7 +105,7 @@ class NovelInfo extends React.Component {
     return (
       <div>
         <div className="jumbotron">
-          <div className="container">
+          <div className="container-fluid">
             <div class=" col align-self-center">
               <img
                 src={this.state.novelInfo["image"]}
@@ -121,22 +133,26 @@ class NovelInfo extends React.Component {
             <p class="large" style={{ fontSize: "1.2em" }}>
               {this.state.novelInfo.description}
             </p>
-            {/* <h2 class="text-center title is-4">
-              linkNU - {this.state.novelInfo.linkNU}
-            </h2>
-            <h2 class="text-center title is-4">
-              novelStatus - {String(this.state.novelInfo.novelStatus)}
-            </h2> */}
           </div>
         </div>
 
         <br />
 
-        <div class="container chapterbox">
-          <div class="col card" style={{ width: "40rem" }}>
+        <div class="container chapterbox  col-sm-6">
+          <div id="chapterBox " class="card">
             <h3 class="title is-4 text-center">Chapters</h3>
-            <div class="row justify-content-md-center">
-              <div className="container">{chapterBox}</div>
+
+            <button
+              id="changeOrder"
+              onClick={this.changeOrdering}
+              class="button is-link"
+            >
+              {this.state.descending ? "↓" : "↑"}
+            </button>
+            <div class="d-flex">
+              <div className="container col-xl-4 col-md-4">
+                <div className="justify-content-center">{chapterBox}</div>
+              </div>
               <br />
             </div>
             <button
@@ -151,10 +167,14 @@ class NovelInfo extends React.Component {
             </button>
           </div>
         </div>
-        <DisqusComments
-          slug={`${this.state.novelInfo.slug}`}
-          title={this.state.novelInfo.title}
-        />
+        {/* {!this.state.loadButton ? (
+          <DisqusComments
+            slug={`${this.state.novelInfo.slug}`}
+            title={this.state.novelInfo.title}
+          />
+        ) : (
+          <div />
+        )} */}
       </div>
     );
   }

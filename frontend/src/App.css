@@ -5,15 +5,15 @@ body {
   line-height: 10em;
 }
 
-div.container.chapter-box > p {
+div.box.chapter-box > p {
   margin-top: 0.8em !important;
 }
 
-.container.chapterbox {
+/* .container.chapterbox {
   display: flex;
   justify-content: center;
   width: 50rem;
-}
+} */
 
 .navbar-item img {
   max-height: 2.5rem;
@@ -97,4 +97,13 @@ div.container.chapter-box > p {
 }
 #nextChapter {
   margin-left: 2em;
+}
+#chapterBox {
+  position: relative;
+}
+#changeOrder {
+  position: absolute;
+  margin: 0;
+  top: 1%;
+  right: 5%;
 }

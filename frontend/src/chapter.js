@@ -1,7 +1,10 @@
 import React from "react";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import axios from "axios";
 import DisqusComments from "./comments.js";
+import Buttons from "./buttons.js";
+
+const apiHome = "http://127.0.0.1:8000/api";
 
 class ChapterView extends React.Component {
   state = {
@@ -12,15 +15,13 @@ class ChapterView extends React.Component {
     chapterIndex: Number,
     novelParentSlug: "",
     textSize: JSON.parse(localStorage.getItem("fontSize")) || 19,
-    lastChapter: "",
-    getNextChapter: "",
     loading: true,
   };
 
   headers = { "Content-Type": "application/json" };
   chapterFetch = (chapterSlug) => {
     axios
-      .get(`http://127.0.0.1:8000/api/getchapter/${chapterSlug}/`, {
+      .get(`${apiHome}/getchapter/${chapterSlug}/`, {
         headers: this.headers,
       })
       .then((response) => {
@@ -32,8 +33,6 @@ class ChapterView extends React.Component {
           chapterIndex: res.index,
           novelParent: res.novelParentName,
           novelParentSlug: res.novelParent,
-          lastChapter: `/chapter/${res.novelParent}-${res.index - 1}`,
-          getNextChapter: `/chapter/${res.novelParent}-${res.index + 1}`,
           loading: false,
         });
         console.log(this.state);
@@ -49,11 +48,19 @@ class ChapterView extends React.Component {
 
     document.addEventListener("keydown", this.handleKeyPress);
   }
+  componentDidUpdate(prevProp) {
+    const currentid = this.props.match.params.id;
+    if (currentid !== prevProp.match.params.id) {
+      this.chapterFetch(currentid);
+    }
+  }
   nextChapter() {
     document.getElementById("nextChapter").click();
+    window.scroll({ top: 0, left: 0, behavior: "smooth" });
   }
   previousChapter() {
     document.getElementById("previousChapter").click();
+    window.scroll({ top: 0, left: 0, behavior: "smooth" });
   }
 
   handleKeyPress = (event) => {
@@ -104,61 +111,26 @@ class ChapterView extends React.Component {
               <nav class="breadcrumb" aria-label="breadcrumbs">
                 <ul>
                   <li>
-                    <a href="/">Home</a>
+                    <Link to="/">Home</Link>
                   </li>
                   <li>
-                    <a href={`/${this.state.novelParentSlug}`}>
+                    <Link to={`/${this.state.novelParentSlug}`}>
                       {this.state.novelParent}
-                    </a>
+                    </Link>
                   </li>
 
                   <li class="is-active">
-                    <a
-                      href={`/chapter/${this.state.novelParentSlug}-${this.state.chapterIndex}`}
+                    <Link
+                      to={`/chapter/${this.state.novelParentSlug}-${this.state.chapterIndex}`}
                       aria-current="page"
                     >
                       {this.state.chapterName}
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </nav>
               <h2 className="title">{this.state.chapterName}</h2>
-              <div className="columns">
-                <div className="column is-5 is-offset-5">
-                  <div className="buttons">
-                    <a
-                      href={`/chapter/${this.state.novelParentSlug}-${
-                        this.state.chapterIndex - 1
-                      }`}
-                    >
-                      <button
-                        id="previousChapter"
-                        className="button is-link previousChapter"
-                        disabled={this.state.chapterIndex > 1 ? "" : "true"}
-                      >
-                        Previous Chapter
-                      </button>
-                    </a>
-
-                    <hr />
-                    <div>
-                      <a
-                        href={`/chapter/${this.state.novelParentSlug}-${
-                          this.state.chapterIndex + 1
-                        }`}
-                      >
-                        <button
-                          id="nextChapter"
-                          className="button is-link nextChapter"
-                          disabled={this.state.nextChapter ? "" : "true"}
-                        >
-                          Next Chapter
-                        </button>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <Buttons key={this.state.chapterIndex} props={this.state} />
               <button onClick={this.addText} className="button is-link">
                 +
               </button>
@@ -175,50 +147,18 @@ class ChapterView extends React.Component {
             }}
           ></div>
           <br />
-
-          <div className="columns">
-            <div className="column is-5 is-offset-5">
-              <div className="buttons">
-                <a
-                  href={`/chapter/${this.state.novelParentSlug}-${
-                    this.state.chapterIndex - 1
-                  }`}
-                >
-                  <button
-                    id="previousChapter"
-                    className="button is-link previousChapter"
-                    disabled={this.state.chapterIndex > 1 ? "" : "true"}
-                  >
-                    Previous Chapter
-                  </button>
-                </a>
-
-                <hr />
-                <div>
-                  <a
-                    href={`/chapter/${this.state.novelParentSlug}-${
-                      this.state.chapterIndex + 1
-                    }`}
-                  >
-                    <button
-                      id="nextChapter"
-                      className="button is-link nextChapter"
-                      disabled={this.state.nextChapter ? "" : "true"}
-                    >
-                      Next Chapter
-                    </button>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Buttons key={this.state.chapterIndex} props={this.state} />
           <br />
         </div>
         <br />
-        <DisqusComments
-          slug={`${this.state.novelParentSlug}-${this.state.chapterIndex}`}
-          title={this.state.chapterName}
-        />
+        {/* {!this.state.loading ? (
+          <DisqusComments
+            slug={`${this.state.novelParentSlug}-${this.state.chapterIndex}`}
+            title={this.state.chapterName}
+          />
+        ) : (
+          <div />
+        )} */}
       </>
     );
   }

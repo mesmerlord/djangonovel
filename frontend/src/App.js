@@ -14,8 +14,8 @@ import Categories from "./categories.js";
 function App() {
   return (
     <div className="App">
-      <Header />
       <Router>
+        <Route path="/" component={Header} />
         <Switch>
           <Route exact path="/">
             <NovelList />
